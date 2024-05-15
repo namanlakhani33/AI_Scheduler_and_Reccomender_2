@@ -136,6 +136,7 @@ class Calendar extends Component {
       .then((data) => {
         console.log("Success:", data);
         this.fetchEvents(); // Fetch updated events after adding a new one
+        this.handleClose(); // Close the dialog
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -170,6 +171,7 @@ class Calendar extends Component {
       .then((data) => {
         console.log("Success:", data);
         this.fetchEvents(); // Fetch updated events after editing
+        this.handleClose(); // Close the dialog
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -187,6 +189,7 @@ class Calendar extends Component {
       .then((data) => {
         console.log("Success:", data);
         this.fetchEvents(); // Fetch updated events after deletion
+        this.handleClose(); // Close the dialog
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -195,33 +198,6 @@ class Calendar extends Component {
     this.handleClose();
   }
 
-  fetchRecommendation(title) {
-    fetch("http://localhost:5000/recommendation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ title }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Recommendation Data:", data);
-        // Open a new tab and display the video recommendations
-        const recommendationWindow = window.open("", "_blank");
-        recommendationWindow.document.write(
-          `<html><head><title>YouTube Recommendations</title></head><body><h1>Videos related to "${title}"</h1>`
-        );
-        data.forEach((video) => {
-          recommendationWindow.document.write(
-            `<a href="${video.url}" target="_blank"><img src="${video.thumbnail}" alt="${video.title}" width="120" height="90">${video.title}</a><br>`
-          );
-        });
-        recommendationWindow.document.write("</body></html>");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
 
   render() {
     console.log("render()");
@@ -262,20 +238,25 @@ class Calendar extends Component {
     ];
     return (
       <div id="Calendar">
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
         <TextField
           floatingLabelText="Enter Command"
           onChange={(e) => {
             this.setState({ command: e.target.value });
           }}
+          multiLine={true}
+          rows={2}
+          style={{ width: "300px" }} // Adjust the width as needed
         />
         <FlatButton
-          label="Submit Command"
+          floatingLabelText={<span style={{ fontWeight: 'bold', fontSize: '20px' }}>Enter Command</span>}
           primary={true}
           keyboardFocused={true}
           onClick={() => {
             this.handleCommandSubmit(this.state.command);
           }}
         />
+      </div>
 
         <BigCalendar
           events={this.state.events}
